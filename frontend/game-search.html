@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>密林寻踪 - 专注力星球</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/game.css">
+</head>
+<body>
+    <header class="game-header">
+        <div class="container">
+            <h1>🌲 密林寻踪</h1>
+            <p class="game-dimension">选择性注意力训练</p>
+            <a href="index.html" class="back-link">← 返回首页</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="card game-instructions">
+            <h2>📖 游戏规则</h2>
+            <div class="instruction-content">
+                <p><strong>🎯 目标：</strong>在茂密的森林中找到目标生物</p>
+                <p><strong>🔍 目标：</strong>页面顶部会显示你需要寻找的目标，它有特定的<strong>形状</strong>和<strong>颜色</strong></p>
+                <p><strong>⌨️ 操作：</strong></p>
+                <ul>
+                    <li>用鼠标<strong>点击</strong>找到与目标匹配的生物</li>
+                    <li>找对加 <kbd>+10</kbd> 分，连击有额外奖励</li>
+                    <li>找错减 <kbd>-5</kbd> 分，连击中断</li>
+                </ul>
+                <p><strong>⚡ 技巧：</strong>仔细看清楚目标的形状和颜色，两者都要匹配才算正确！</p>
+            </div>
+            <button class="btn btn-primary" onclick="startGame()">开始游戏</button>
+        </section>
+
+        <section id="game-area" class="game-area hidden">
+            <div class="game-stats">
+                <div class="stat-item">
+                    <span class="stat-label">剩余时间</span>
+                    <span id="timer" class="stat-value">2:00</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">分数</span>
+                    <span id="score" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">连击</span>
+                    <span id="combo" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">已找到</span>
+                    <span id="found" class="stat-value">0/10</span>
+                </div>
+            </div>
+
+            <div class="search-container" id="search-container">
+                <div class="target-indicator">
+                    <h3>🔎 寻找目标：</h3>
+                    <div id="target-display" style="font-size: 2rem; margin-top: 10px;"></div>
+                </div>
+            </div>
+
+            <div id="feedback" class="feedback hidden"></div>
+        </section>
+
+        <section id="result-area" class="result-area hidden">
+            <div class="card result-card">
+                <h2>🏆 游戏结束</h2>
+                <div class="result-stats">
+                    <div class="result-stat">
+                        <span class="result-label">最终得分</span>
+                        <span id="final-score" class="result-value">0</span>
+                    </div>
+                    <div class="result-stat">
+                        <span class="result-label">找到目标</span>
+                        <span id="final-found" class="result-value">0</span>
+                    </div>
+                    <div class="result-stat">
+                        <span class="result-label">最高连击</span>
+                        <span id="final-combo" class="result-value">0</span>
+                    </div>
+                    <div class="result-stat">
+                        <span class="result-label">正确率</span>
+                        <span id="final-accuracy" class="result-value">0%</span>
+                    </div>
+                </div>
+                <div class="result-actions">
+                    <button class="btn btn-primary" onclick="restartGame()">再玩一次</button>
+                    <button class="btn btn-secondary" onclick="goHome()">返回首页</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/common.js"></script>
+    <script src="js/game-search.js"></script>
+</body>
+</html>

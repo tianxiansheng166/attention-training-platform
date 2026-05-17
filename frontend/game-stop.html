@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星际拦截 - 专注力星球</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/game.css">
+</head>
+<body>
+    <header class="game-header">
+        <div class="container">
+            <h1>🛑 星际拦截</h1>
+            <p class="game-dimension">抑制控制训练</p>
+            <a href="index.html" class="back-link">← 返回首页</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="card game-instructions">
+            <h2>📖 游戏规则</h2>
+            <div class="instruction-content">
+                <p><strong>🎯 目标：</strong>在复杂的宇宙中找到目标信号并拦截</p>
+                <p><strong>⌨️ 操作：</strong></p>
+                <ul>
+                    <li>当出现 <strong style="color:#4CAF50;">绿色信号</strong> 时，按 <kbd>空格键</kbd> 或 <strong>点击</strong> 拦截</li>
+                    <li>当出现 <strong style="color:#F44336;">红色信号</strong> 时，<strong>不要</strong> 操作</li>
+                </ul>
+                <p><strong>⚡ 注意：</strong>随着游戏进行，规则会变化！注意观察提示</p>
+            </div>
+            <button class="btn btn-primary" onclick="startGame()">开始游戏</button>
+        </section>
+
+        <section id="game-area" class="game-area hidden">
+            <div class="game-stats">
+                <div class="stat-item">
+                    <span class="stat-label">阶段</span>
+                    <span id="phase" class="stat-value">1</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">分数</span>
+                    <span id="score" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">连击</span>
+                    <span id="combo" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">正确率</span>
+                    <span id="accuracy" class="stat-value">0%</span>
+                </div>
+            </div>
+
+            <div class="go-indicator-container">
+                <div id="go-indicator" class="go-indicator waiting">⏳</div>
+            </div>
+
+            <div id="feedback" class="feedback hidden"></div>
+
+            <div id="rule-display" class="rule-display">
+                <p>当前规则：<strong id="current-rule">绿色时拦截</strong></p>
+            </div>
+
+            <div class="game-controls">
+                <div class="control-hint">
+                    <kbd>空格</kbd> 拦截信号
+                    <kbd>鼠标点击</kbd> 拦截信号
+                </div>
+            </div>
+        </section>
+
+        <section id="result-area" class="result-area hidden">
+            <div class="card result-card">
+                <h2>🏆 游戏结束</h2>
+                <div class="result-stats">
+                    <div class="result-stat">
+                        <span class="result-label">最终得分</span>
+                        <span id="final-score" class="result-value">0</span>
+                    </div>
+                    <div class="result-stat">
+                        <span class="result-label">达到阶段</span>
+                        <span id="final-phase" class="result-value">1</span>
+                    </div>
+                    <div class="result-stat">
+                        <span class="result-label">最高连击</span>
+                        <span id="final-combo" class="result-value">0</span>
+                    </div>
+                    <div class="result-stat">
+                        <span class="result-label">正确率</span>
+                        <span id="final-accuracy" class="result-value">0%</span>
+                    </div>
+                </div>
+                <div class="result-actions">
+                    <button class="btn btn-primary" onclick="restartGame()">再玩一次</button>
+                    <button class="btn btn-secondary" onclick="goHome()">返回首页</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/common.js"></script>
+    <script src="js/game-stop.js"></script>
+</body>
+</html>

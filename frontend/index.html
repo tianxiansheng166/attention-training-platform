@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>专注力星球 - 青少年专注力训练平台</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="container">
+            <h1>🎯 专注力星球</h1>
+            <nav class="main-nav">
+                <span id="user-level-display" class="level-badge">等级: 未定级</span>
+                <a href="growth-report.html" class="nav-link">📊 成长报告</a>
+                <a href="task-workshop.html" class="nav-link">🛠️ 任务工坊</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- 初始定级测试 -->
+        <section class="card initial-test-section" id="initial-test-section">
+            <div class="section-header">
+                <h2>🧠 专注力初始定级</h2>
+            </div>
+            <p class="section-intro">在开始训练前，我们需要快速测试你的反应速度和专注度，以便为你匹配合适的游戏难度。</p>
+            <button id="start-test-btn" class="btn btn-primary" onclick="startInitialTest()">
+                <span>🚀</span> 开始测试
+            </button>
+
+            <div id="test-container" class="test-container hidden">
+                <div class="test-instructions">
+                    <p id="test-info" class="test-info">准备...</p>
+                    <div id="test-circle" class="test-circle"></div>
+                    <div class="test-hint">
+                        <p><span class="color-green">🟢 绿色</span> 圆圈出现时，请按 <kbd>空格键</kbd> 或 <kbd>点击</kbd></p>
+                        <p><span class="color-red">🔴 红色</span> 圆圈出现时，请 <strong>不要</strong> 操作！</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 游戏入口 -->
+        <section class="game-section">
+            <h2 class="section-title">🎮 选择你的训练游戏</h2>
+            <div class="game-grid">
+                <article class="game-card" onclick="location.href='game-nback.html'">
+                    <div class="game-icon">🧩</div>
+                    <h3>时空密码</h3>
+                    <p class="game-dimension">工作记忆更新</p>
+                    <p class="game-desc">训练位置和颜色的双重记忆能力</p>
+                    <div class="game-tags">
+                        <span class="tag tag-memory">记忆</span>
+                        <span class="tag tag-adaptive">自适应难度</span>
+                    </div>
+                </article>
+
+                <article class="game-card" onclick="location.href='game-stop.html'">
+                    <div class="game-icon">🛑</div>
+                    <h3>星际拦截</h3>
+                    <p class="game-dimension">抑制控制</p>
+                    <p class="game-desc">学会在干扰中保持冷静和专注</p>
+                    <div class="game-tags">
+                        <span class="tag tag-control">自控</span>
+                        <span class="tag tag-progressive">五阶段递进</span>
+                    </div>
+                </article>
+
+                <article class="game-card" onclick="location.href='game-search.html'">
+                    <div class="game-icon">🦜</div>
+                    <h3>密林寻踪</h3>
+                    <p class="game-dimension">选择性注意力</p>
+                    <p class="game-desc">在复杂场景中找到目标生物</p>
+                    <div class="game-tags">
+                        <span class="tag tag-visual">视觉</span>
+                        <span class="tag tag-search">搜索</span>
+                    </div>
+                </article>
+
+                <article class="game-card" onclick="location.href='game-vigil.html'">
+                    <div class="game-icon">📡</div>
+                    <h3>要塞守望</h3>
+                    <p class="game-dimension">持续性注意力</p>
+                    <p class="game-desc">长时间保持警觉，发现隐藏信号</p>
+                    <div class="game-tags">
+                        <span class="tag tag-vigilance">警觉</span>
+                        <span class="tag tag-endurance">持久</span>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- 快速入口 -->
+        <section class="quick-access">
+            <div class="card quick-card task-workshop-card" onclick="location.href='task-workshop.html'">
+                <span class="quick-icon">🛠️</span>
+                <h3>智能任务规划工坊</h3>
+                <p>AI 帮你把大难题拆解成小步骤</p>
+                <span class="quick-arrow">→</span>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; 2024-2026 专注力星球 - 科学的专注力训练</p>
+            <p class="footer-note">基于认知科学实证研究设计</p>
+        </div>
+    </footer>
+
+    <script src="js/common.js"></script>
+    <script src="js/home.js"></script>
+</body>
+</html>

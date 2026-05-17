@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>要塞守望 - 专注力星球</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/game.css">
+</head>
+<body>
+    <header class="game-header">
+        <div class="container">
+            <h1>🏰 要塞守望</h1>
+            <p class="game-dimension">持续性注意力训练</p>
+            <a href="index.html" class="back-link">← 返回首页</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="card game-instructions">
+            <h2>📖 游戏规则</h2>
+            <div class="instruction-content">
+                <p><strong>🎯 目标：</strong>你是要塞的守望者，需要在漫长的值守中保持警觉</p>
+                <p><strong>⚡ 任务：</strong>观察信号区域，出现特定信号时立即点击</p>
+                <p><strong>📊 信号类型：</strong></p>
+                <ul>
+                    <li><strong style="color:#4CAF50;">🟢 普通信号</strong> - 绿色，出现时点击</li>
+                    <li><strong style="color:#2196F3;">🔵 微弱信号</strong> - 蓝色，需要仔细观察才能发现</li>
+                    <li><strong style="color:#FF9800;">🟡 复合信号</strong> - 橙色，需要双击</li>
+                    <li><strong style="color:#9C27B0;">🟣 紧急信号</strong> - 紫色，出现时<strong>不要</strong>点击</li>
+                </ul>
+                <p><strong>⚡ 注意：</strong>保持警觉！能量条代表你的专注力，消耗太快说明你可能在走神</p>
+            </div>
+            <button class="btn btn-primary" onclick="startGame()">开始守望</button>
+        </section>
+
+        <section id="game-area" class="game-area hidden">
+            <div class="game-stats">
+                <div class="stat-item">
+                    <span class="stat-label">剩余时间</span>
+                    <span id="timer" class="stat-value">5:00</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">分数</span>
+                    <span id="score" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">正确</span>
+                    <span id="correct" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">能量</span>
+                    <span id="energy" class="stat-value">100%</span>
+                </div>
+            </div>
+
+            <div class="energy-bar">
+                <div id="energy-fill" class="energy-fill" style="width: 100%;"></div>
+            </div>
+
+            <div class="vigilance-container" id="vigilance-container">
+                <p style="text-align: center; color: white; margin-top: 200px; opacity: 0.7;">
+                    信号区域 - 仔细观察...
+                </p>
+            </div>
+
+            <div id="feedback" class="feedback hidden"></div>
+        </section>
+
+        <section id="result-area" class="result-area hidden">
+            <div class="card result-card">
+                <h2>🏆 守望结束</h2>
+                <div class="result-stats">
+                    <div class="result-stat">
+                        <span class="result-label">最终得分</span>
+                        <span id="final-score" class="result-value">0</span>
+                    </div>
+                    <div class="result-stat">
+                        <span class="result-label">正确反应</span>
+                        <span id="final-correct" class="result-value">0</span>
+                    </div>
+                    <div class="result-stat">
+                        <span class="result-label">漏报</span>
+                        <span id="final-missed" class="result-value">0</span>
+                    </div>
+                    <div class="result-stat">
+                        <span class="result-label">误报</span>
+                        <span id="final-false" class="result-value">0</span>
+                    </div>
+                </div>
+                <div class="result-actions">
+                    <button class="btn btn-primary" onclick="restartGame()">继续守望</button>
+                    <button class="btn btn-secondary" onclick="goHome()">返回首页</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/common.js"></script>
+    <script src="js/game-vigil.js"></script>
+</body>
+</html>
