@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>成长报告 - 专注力星球</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/parent.css">
+    <link rel="stylesheet" href="css/report.css">
+</head>
+<body>
+    <div class="report-container">
+        <header class="report-header">
+            <button class="btn-back" onclick="history.back()">← 返回</button>
+            <h1>📊 成长报告</h1>
+            <button class="btn-share" onclick="shareReport()">分享</button>
+        </header>
+
+        <main class="report-main">
+            <!-- 报告周期选择 -->
+            <div class="period-selector">
+                <button class="period-btn active" data-period="week">本周</button>
+                <button class="period-btn" data-period="month">本月</button>
+                <button class="period-btn" data-period="quarter">本季度</button>
+            </div>
+
+            <!-- 核心指标卡片 -->
+            <section class="core-metrics">
+                <div class="metric-card">
+                    <div class="metric-icon">🎯</div>
+                    <div class="metric-value" id="avgAccuracy">82%</div>
+                    <div class="metric-label">平均正确率</div>
+                    <div class="metric-trend up">↑ 5%</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">⏱️</div>
+                    <div class="metric-value" id="totalMinutes">180</div>
+                    <div class="metric-label">总训练时长</div>
+                    <div class="metric-trend up">↑ 30分钟</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">🔥</div>
+                    <div class="metric-value" id="trainDays">6</div>
+                    <div class="metric-label">训练天数</div>
+                    <div class="metric-trend up">↑ 2天</div>
+                </div>
+                <div class="metric-card highlight">
+                    <div class="metric-icon">🧠</div>
+                    <div class="metric-value" id="focusScore">85</div>
+                    <div class="metric-label">专注力指数</div>
+                    <div class="metric-trend up">↑ 8分</div>
+                </div>
+            </section>
+
+            <!-- 训练日历 -->
+            <section class="training-calendar">
+                <h3>📅 训练日历</h3>
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- 动态生成 -->
+                </div>
+                <div class="calendar-legend">
+                    <span><span class="legend-dot trained"></span>已训练</span>
+                    <span><span class="legend-dot excellent"></span>表现优秀</span>
+                </div>
+            </section>
+
+            <!-- 游戏表现 -->
+            <section class="game-performance">
+                <h3>🎮 各游戏表现</h3>
+                <div class="performance-list" id="performanceList">
+                    <!-- 动态生成 -->
+                </div>
+            </section>
+
+            <!-- 认知能力趋势 -->
+            <section class="cognitive-trend">
+                <h3>📈 认知能力趋势</h3>
+                <div class="trend-chart-container">
+                    <canvas id="trendCanvas" width="350" height="200"></canvas>
+                </div>
+                <div class="trend-legend">
+                    <div class="legend-row">
+                        <span class="legend-color" style="background: #667eea"></span>
+                        <span class="legend-label">工作记忆</span>
+                        <span class="legend-value" id="wmTrend">--</span>
+                    </div>
+                    <div class="legend-row">
+                        <span class="legend-color" style="background: #f5576c"></span>
+                        <span class="legend-label">抑制控制</span>
+                        <span class="legend-value" id="icTrend">--</span>
+                    </div>
+                    <div class="legend-row">
+                        <span class="legend-color" style="background: #10b981"></span>
+                        <span class="legend-label">视觉搜索</span>
+                        <span class="legend-value" id="vsTrend">--</span>
+                    </div>
+                    <div class="legend-row">
+                        <span class="legend-color" style="background: #f59e0b"></span>
+                        <span class="legend-label">持续注意</span>
+                        <span class="legend-value" id="saTrend">--</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 成就徽章 -->
+            <section class="achievements">
+                <h3>🏆 获得成就</h3>
+                <div class="achievement-grid" id="achievementGrid">
+                    <!-- 动态生成 -->
+                </div>
+            </section>
+
+            <!-- AI分析报告 -->
+            <section class="ai-analysis">
+                <div class="section-header">
+                    <h3>🤖 AI深度分析</h3>
+                    <span class="ai-powered">Powered by DeepSeek</span>
+                </div>
+                <div class="analysis-content" id="analysisContent">
+                    <div class="analysis-section">
+                        <h4>📊 整体评估</h4>
+                        <p id="overallAnalysis">
+                            孩子在过去一周的训练中表现稳定，专注力指数稳步提升。
+                            特别是在视觉搜索任务中表现突出，正确率达到85%以上。
+                            工作记忆和抑制控制能力有待加强，建议增加相关训练。
+                        </p>
+                    </div>
+                    <div class="analysis-section">
+                        <h4>🎯 重点关注</h4>
+                        <ul id="keyPoints">
+                            <li>抑制控制能力略低于同龄平均水平</li>
+                            <li>训练时间分布不够均匀</li>
+                            <li>部分游戏存在较大波动</li>
+                        </ul>
+                    </div>
+                    <div class="analysis-section">
+                        <h4>💡 优化建议</h4>
+                        <div class="suggestion-list" id="suggestionList">
+                            <div class="suggestion-item">
+                                <span class="suggestion-num">1</span>
+                                <div class="suggestion-content">
+                                    <strong>加强色彩Stroop训练</strong>
+                                    <p>每天进行3-5分钟的Stroop任务，有助于提升抑制控制能力。</p>
+                                </div>
+                            </div>
+                            <div class="suggestion-item">
+                                <span class="suggestion-num">2</span>
+                                <div class="suggestion-content">
+                                    <strong>保持训练规律性</strong>
+                                    <p>建议固定每天的训练时间，形成良好的训练习惯。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-refresh-analysis" onclick="refreshAnalysis()">
+                    🔄 重新生成分析
+                </button>
+            </section>
+
+            <!-- 与同龄人对比 -->
+            <section class="peer-comparison">
+                <h3>👥 与同龄人对比</h3>
+                <div class="comparison-bars" id="comparisonBars">
+                    <div class="comparison-item">
+                        <div class="comparison-label">专注力指数</div>
+                        <div class="comparison-bar-container">
+                            <div class="comparison-bar self" style="width: 85%"></div>
+                            <div class="comparison-bar avg" style="width: 72%"></div>
+                        </div>
+                        <div class="comparison-value">超过 <em>78%</em> 的同龄人</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 导出选项 -->
+            <section class="export-section">
+                <button class="btn-export" onclick="exportPDF()">
+                    📄 导出PDF报告
+                </button>
+                <button class="btn-export secondary" onclick="exportData()">
+                    📊 导出数据
+                </button>
+            </section>
+        </main>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/report.js"></script>
+</body>
+</html>

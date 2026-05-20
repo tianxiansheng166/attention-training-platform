@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册 - 专注力星球</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/game.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="container">
+            <h1>🎯 专注力星球</h1>
+            <nav class="main-nav">
+                <a href="index.html" class="nav-link">返回首页</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="card auth-card">
+            <div class="auth-header">
+                <h2>创建账户</h2>
+                <p>开始你的专注力训练之旅</p>
+            </div>
+
+            <form id="register-form" class="auth-form">
+                <div class="form-group">
+                    <label>注册身份</label>
+                    <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <input type="radio" name="role" value="child" checked onchange="toggleRoleFields()">
+                            <span>👶 儿童用户</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <input type="radio" name="role" value="parent" onchange="toggleRoleFields()">
+                            <span>👨‍👩‍👧 家长用户</span>
+                        </label>
+                    </div>
+                    <p id="roleDescription" style="font-size: 0.85rem; color: #666; margin-top: 0.5rem;">
+                        儿童用户可以参与各种专注力训练游戏
+                    </p>
+                </div>
+
+                <div class="form-group">
+                    <label for="name">昵称</label>
+                    <input type="text" id="name" name="name" placeholder="给自己起个昵称" required>
+                </div>
+
+                <div id="childFields">
+                    <div class="form-group">
+                        <label for="age">年龄 <span style="color: red;">*</span></label>
+                        <input type="number" id="age" name="age" placeholder="3-18岁" min="3" max="18" required>
+                        <small style="color: #999;">训练内容会根据年龄自动调整</small>
+                    </div>
+                </div>
+
+                <div id="parentFields" style="display: none;">
+                    <div class="form-group">
+                        <label>家长说明</label>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; font-size: 0.9rem;">
+                            <p style="margin-bottom: 10px;">👨‍👩‍👧 作为家长，您可以：</p>
+                            <ul style="margin-left: 20px; line-height: 1.8;">
+                                <li>查看孩子的训练记录和进步情况</li>
+                                <li>设置孩子的每日训练时长</li>
+                                <li>接收孩子的训练报告</li>
+                                <li>绑定孩子的账号后即可查看</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">邮箱地址</label>
+                    <input type="email" id="email" name="email" placeholder="请输入邮箱" required>
+                    <small style="color: #999;">用于登录和找回密码</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">密码</label>
+                    <input type="password" id="password" name="password" placeholder="至少6个字符" required minlength="6">
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm-password">确认密码</label>
+                    <input type="password" id="confirm-password" name="confirm-password" placeholder="再次输入密码" required>
+                </div>
+
+                <div class="form-group" id="parentPhoneGroup" style="display: none;">
+                    <label for="parent-phone">家长手机号（可选）</label>
+                    <input type="tel" id="parent-phone" name="parent-phone" placeholder="用于接收训练提醒">
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-large" id="register-btn">
+                        <span id="register-text">注册</span>
+                        <span id="register-loading" class="hidden">注册中...</span>
+                    </button>
+                </div>
+            </form>
+
+            <div class="auth-footer">
+                <p>已有账户？<a href="login.html" class="link">立即登录</a></p>
+            </div>
+        </section>
+
+        <div id="error-message" class="alert alert-error hidden"></div>
+        <div id="success-message" class="alert alert-success hidden"></div>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; 2024-2026 专注力星球</p>
+        </div>
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/common.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const registerForm = document.getElementById('register-form');
+            const errorMessage = document.getElementById('error-message');
+            const successMessage = document.getElementById('success-message');
+            const registerBtn = document.getElementById('register-btn');
+            const registerText = document.getElementById('register-text');
+            const registerLoading = document.getElementById('register-loading');
+
+            window.toggleRoleFields = function() {
+                const role = document.querySelector('input[name="role"]:checked').value;
+                const childFields = document.getElementById('childFields');
+                const parentFields = document.getElementById('parentFields');
+                const parentPhoneGroup = document.getElementById('parentPhoneGroup');
+                const roleDescription = document.getElementById('roleDescription');
+                const ageInput = document.getElementById('age');
+
+                if (role === 'child') {
+                    childFields.style.display = 'block';
+                    parentFields.style.display = 'none';
+                    parentPhoneGroup.style.display = 'none';
+                    ageInput.required = true;
+                    roleDescription.textContent = '儿童用户可以参与各种专注力训练游戏';
+                } else {
+                    childFields.style.display = 'none';
+                    parentFields.style.display = 'block';
+                    parentPhoneGroup.style.display = 'block';
+                    ageInput.required = false;
+                    roleDescription.textContent = '家长用户可以查看和管理孩子的训练情况';
+                }
+            };
+
+            toggleRoleFields();
+
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.classList.remove('hidden');
+                successMessage.classList.add('hidden');
+            }
+
+            function showSuccess(message) {
+                successMessage.textContent = message;
+                successMessage.classList.remove('hidden');
+                errorMessage.classList.add('hidden');
+            }
+
+            function setLoading(isLoading) {
+                registerBtn.disabled = isLoading;
+                registerText.classList.toggle('hidden', isLoading);
+                registerLoading.classList.toggle('hidden', !isLoading);
+            }
+
+            registerForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirm-password').value;
+                const name = document.getElementById('name').value.trim();
+                const age = document.getElementById('age').value;
+                const parentPhone = document.getElementById('parent-phone').value.trim();
+                const role = document.querySelector('input[name="role"]:checked').value;
+
+                // 简单邮箱格式验证
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!email) {
+                    showError('请填写邮箱');
+                    return;
+                }
+                if (!emailRegex.test(email)) {
+                    showError('请输入有效的邮箱地址');
+                    return;
+                }
+
+                if (!password) {
+                    showError('请填写密码');
+                    return;
+                }
+
+                if (password !== confirmPassword) {
+                    showError('两次输入的密码不一致');
+                    return;
+                }
+
+                if (password.length < 6) {
+                    showError('密码至少需要6个字符');
+                    return;
+                }
+
+                if (!name) {
+                    showError('请填写昵称');
+                    return;
+                }
+
+                // 如果是儿童用户，验证年龄
+                if (role === 'child' && (!age || age < 3 || age > 18)) {
+                    showError('儿童用户请填写3-18岁的年龄');
+                    return;
+                }
+
+                setLoading(true);
+
+                try {
+                    const result = await api.auth.register({
+                        email: email,
+                        password: password,
+                        username: name,
+                        role: role,
+                        age: role === 'child' ? parseInt(age) : null,
+                        parent_phone: parentPhone
+                    });
+                    
+                    showSuccess('注册成功！正在跳转到登录页...');
+                    
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 1500);
+                } catch (error) {
+                    showError(error.message || '注册失败，请稍后重试');
+                } finally {
+                    setLoading(false);
+                }
+            });
+
+            if (api.isLoggedIn()) {
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>

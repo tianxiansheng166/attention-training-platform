@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>家长控制台 - 专注力星球</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/parent.css">
+</head>
+<body>
+    <div class="parent-container">
+        <header class="parent-header">
+            <div class="header-left">
+                <button class="btn-back" onclick="logout()">← 退出登录</button>
+            </div>
+            <div class="header-center">
+                <h1>👨‍👩‍👧 家长控制台</h1>
+            </div>
+            <div class="header-right">
+                <button class="btn-notify" onclick="showNotifications()">
+                    🔔 <span class="notify-badge" id="notifyBadge">0</span>
+                </button>
+            </div>
+        </header>
+
+        <main class="parent-main">
+            <!-- 孩子概览卡片 -->
+            <section class="child-overview" id="childOverview">
+                <div class="child-avatar">
+                    <div class="avatar-circle" id="childAvatar">👶</div>
+                </div>
+                <div class="child-info">
+                    <h2 id="childName">孩子账号</h2>
+                    <p id="childStatus">状态：在线</p>
+                    <div class="child-stats-mini">
+                        <span>🎮 本周训练 <em id="weeklyTrainings">0</em> 次</span>
+                        <span>📊 专注力评分 <em id="focusScore">--</em></span>
+                    </div>
+                </div>
+                <div class="child-actions">
+                    <button class="btn-bind-child" onclick="showBindChildModal()">➕ 绑定孩子</button>
+                    <button class="btn-edit-child" onclick="switchChild()">切换孩子</button>
+                </div>
+            </section>
+
+            <!-- 快捷操作 -->
+            <section class="quick-actions">
+                <button class="action-card" onclick="showTrainingHistory()">
+                    <div class="action-icon">📊</div>
+                    <div class="action-label">训练记录</div>
+                </button>
+                <button class="action-card" onclick="showGrowthReport()">
+                    <div class="action-icon">📈</div>
+                    <div class="action-label">成长报告</div>
+                </button>
+                <button class="action-card" onclick="showTimeSettings()">
+                    <div class="action-icon">⏰</div>
+                    <div class="action-label">时间设置</div>
+                </button>
+                <button class="action-card" onclick="showContentFilter()">
+                    <div class="action-icon">🛡️</div>
+                    <div class="action-label">内容设置</div>
+                </button>
+            </section>
+
+            <!-- 今日训练摘要 -->
+            <section class="today-summary">
+                <div class="section-header">
+                    <h3>📅 今日训练摘要</h3>
+                    <span class="date" id="todayDate"></span>
+                </div>
+                <div class="summary-content" id="todaySummary">
+                    <div class="summary-loading">
+                        <div class="spinner"></div>
+                        <p>加载中...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 周训练趋势 -->
+            <section class="weekly-trend">
+                <div class="section-header">
+                    <h3>📈 本周训练趋势</h3>
+                </div>
+                <div class="trend-chart" id="trendChart">
+                    <div class="chart-placeholder">
+                        <div class="chart-bars">
+                            <div class="chart-bar" data-day="周一" style="--height: 0%"></div>
+                            <div class="chart-bar" data-day="周二" style="--height: 0%"></div>
+                            <div class="chart-bar" data-day="周三" style="--height: 0%"></div>
+                            <div class="chart-bar" data-day="周四" style="--height: 0%"></div>
+                            <div class="chart-bar" data-day="周五" style="--height: 0%"></div>
+                            <div class="chart-bar" data-day="周六" style="--height: 0%"></div>
+                            <div class="chart-bar" data-day="周日" style="--height: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="trend-summary">
+                    <div class="trend-item">
+                        <span class="trend-label">训练天数</span>
+                        <span class="trend-value" id="trainDays">0/7</span>
+                    </div>
+                    <div class="trend-item">
+                        <span class="trend-label">平均时长</span>
+                        <span class="trend-value" id="avgDuration">--分钟</span>
+                    </div>
+                    <div class="trend-item">
+                        <span class="trend-label">平均得分</span>
+                        <span class="trend-value" id="avgScore">--分</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 认知能力雷达图 -->
+            <section class="cognitive-radar">
+                <div class="section-header">
+                    <h3>🧠 认知能力雷达图</h3>
+                    <button class="btn-refresh" onclick="refreshCognitiveData()">🔄</button>
+                </div>
+                <div class="radar-container">
+                    <canvas id="radarCanvas" width="280" height="280"></canvas>
+                    <div class="radar-legend">
+                        <div class="legend-item"><span class="legend-color" style="background: #667eea"></span>工作记忆</div>
+                        <div class="legend-item"><span class="legend-color" style="background: #f5576c"></span>抑制控制</div>
+                        <div class="legend-item"><span class="legend-color" style="background: #10b981"></span>视觉搜索</div>
+                        <div class="legend-item"><span class="legend-color" style="background: #f59e0b"></span>持续注意</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AI建议 -->
+            <section class="ai-suggestions">
+                <div class="section-header">
+                    <h3>💡 AI智能建议</h3>
+                    <span class="ai-badge">基于DeepSeek分析</span>
+                </div>
+                <div class="suggestions-content" id="suggestionsContent">
+                    <div class="suggestion-card">
+                        <div class="suggestion-icon">🎯</div>
+                        <div class="suggestion-text">
+                            <h4>建议加强抑制控制训练</h4>
+                            <p>孩子的Stroop测试表现显示，抑制自动反应的能力有提升空间。建议每天进行5分钟的色彩Stroop训练。</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 设置面板 -->
+            <section class="settings-panel">
+                <h3>⚙️ 设置管理</h3>
+                <div class="settings-list">
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-icon">📅</span>
+                            <div class="setting-text">
+                                <span class="setting-name">每日训练时间</span>
+                                <span class="setting-desc" id="dailyTimeLimit">未设置</span>
+                            </div>
+                        </div>
+                        <button class="btn-setting" onclick="editDailyTime()">修改</button>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-icon">🌙</span>
+                            <div class="setting-text">
+                                <span class="setting-name">宵禁设置</span>
+                                <span class="setting-desc" id="bedtimeSetting">未设置</span>
+                            </div>
+                        </div>
+                        <button class="btn-setting" onclick="editBedtime()">修改</button>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-icon">🎮</span>
+                            <div class="setting-text">
+                                <span class="setting-name">允许的游戏</span>
+                                <span class="setting-desc" id="allowedGames">全部</span>
+                            </div>
+                        </div>
+                        <button class="btn-setting" onclick="editAllowedGames()">修改</button>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-icon">🔗</span>
+                            <div class="setting-text">
+                                <span class="setting-name">绑定孩子账号</span>
+                                <span class="setting-desc">管理孩子的账号</span>
+                            </div>
+                        </div>
+                        <button class="btn-setting" onclick="parentPanel.manageChildren()">管理</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- 底部导航 -->
+        <nav class="parent-nav">
+            <button class="nav-item active" data-tab="overview">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-label">概览</span>
+            </button>
+            <button class="nav-item" data-tab="report" onclick="location.href='parent-report.html'">
+                <span class="nav-icon">📊</span>
+                <span class="nav-label">报告</span>
+            </button>
+            <button class="nav-item" data-tab="settings" onclick="showTimeSettings()">
+                <span class="nav-icon">⚙️</span>
+                <span class="nav-label">设置</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- 模态框：时间设置 -->
+    <div id="timeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>设置每日训练时间</h3>
+                <button class="modal-close" onclick="closeModal('timeModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>每日最长训练时间（分钟）</label>
+                    <div class="number-input">
+                        <button class="num-btn minus" onclick="adjustTime(-5)">-</button>
+                        <input type="number" id="dailyMinutes" value="30" min="10" max="120">
+                        <button class="num-btn plus" onclick="adjustTime(5)">+</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>提醒频率</label>
+                    <select id="reminderFreq">
+                        <option value="0">不提醒</option>
+                        <option value="15">每15分钟</option>
+                        <option value="30" selected>每30分钟</option>
+                        <option value="60">每60分钟</option>
+                    </select>
+                </div>
+                <button class="btn-save" onclick="saveTimeSettings()">保存设置</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模态框：游戏设置 -->
+    <div id="gamesModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>允许的游戏</h3>
+                <button class="modal-close" onclick="closeModal('gamesModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="game-toggles" id="gameToggles">
+                    <!-- 动态生成 -->
+                </div>
+                <button class="btn-save" onclick="saveGameSettings()">保存设置</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模态框：切换孩子 -->
+    <div id="switchChildModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>选择孩子账号</h3>
+                <button class="modal-close" onclick="closeModal('switchChildModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="children-list" id="childrenList">
+                    <!-- 动态生成 -->
+                </div>
+                <button class="btn-add-child" onclick="parentPanel.showAddChild()">+ 添加新孩子账号</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模态框：绑定孩子 -->
+    <div id="bindChildModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>绑定孩子账号</h3>
+                <button class="modal-close" onclick="closeModal('bindChildModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                <label>请输入孩子的邀请码</label>
+                <input type="text" id="inviteCodeInput" placeholder="请输入8位邀请码" class="form-control" maxlength="8">
+                <p class="help-text">在孩子的个人中心可以获取邀请码</p>
+            </div>
+            <button class="btn btn-primary" onclick="parentPanel.bindChildByCode()" id="bindChildBtn">绑定账号</button>
+            <div id="bindResult" style="margin-top: 15px;"></div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/parent.js"></script>
+</body>
+</html>

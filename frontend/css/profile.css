@@ -1,0 +1,332 @@
+/* 个人主页样式 */
+.profile-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 30px 20px;
+    border-radius: 0 0 30px 30px;
+    margin-bottom: 20px;
+}
+
+.avatar-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.avatar-large {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+}
+
+.user-info h2 {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.user-email {
+    font-size: 14px;
+    opacity: 0.9;
+    margin-bottom: 10px;
+}
+
+.user-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.badge {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+}
+
+.profile-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.stat-box {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 15px;
+    border-radius: 15px;
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 12px;
+    opacity: 0.9;
+}
+
+/* 进度卡片 */
+.progress-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.progress-card {
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #666;
+}
+
+.progress-bar {
+    height: 8px;
+    background: #f0f0f0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+/* 认知能力网格 */
+.cognitive-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.cognitive-card {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.cognitive-icon {
+    font-size: 30px;
+    margin-bottom: 10px;
+}
+
+.cognitive-name {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.cognitive-score {
+    font-size: 24px;
+    font-weight: bold;
+    color: #667eea;
+}
+
+/* 历史记录 */
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.history-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.history-icon {
+    width: 45px;
+    height: 45px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+}
+
+.history-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.history-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.history-meta {
+    font-size: 12px;
+    color: #999;
+    display: flex;
+    gap: 10px;
+}
+
+.history-score {
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.score-value {
+    font-size: 22px;
+    font-weight: bold;
+    color: #667eea;
+}
+
+.score-label {
+    font-size: 11px;
+    color: #999;
+}
+
+/* 成就网格 */
+.achievement-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.achievement-item {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 20px 15px;
+    border-radius: 15px;
+    text-align: center;
+}
+
+.achievement-icon {
+    font-size: 36px;
+    margin-bottom: 10px;
+}
+
+.achievement-name {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.achievement-desc {
+    font-size: 11px;
+    color: #666;
+    line-height: 1.4;
+}
+
+/* 家长绑定卡片 */
+.parent-binding-card {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    text-align: center;
+}
+
+.binding-tip {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.invite-code-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.invite-code {
+    font-size: 24px;
+    font-weight: bold;
+    font-family: monospace;
+    background: #f5f7fa;
+    padding: 10px 20px;
+    border-radius: 8px;
+    letter-spacing: 2px;
+}
+
+.binding-tip-small {
+    font-size: 12px;
+    color: #999;
+}
+
+/* 空状态 */
+.empty-text {
+    text-align: center;
+    padding: 40px 20px;
+    color: #999;
+    font-size: 14px;
+}
+
+.loading-text {
+    text-align: center;
+    padding: 30px;
+    color: #999;
+}
+
+/* 按钮 */
+.btn-text {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 8px;
+}
+
+.btn-text:hover {
+    opacity: 0.8;
+}
+
+.btn-small {
+    padding: 8px 16px;
+    font-size: 13px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.btn-small:hover {
+    background: #5568d3;
+}
+
+/* 响应式 */
+@media (max-width: 480px) {
+    .cognitive-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .achievement-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .avatar-section {
+        flex-direction: column;
+        text-align: center;
+    }
+}

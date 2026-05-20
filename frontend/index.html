@@ -11,7 +11,12 @@
         <div class="container">
             <h1>🎯 专注力星球</h1>
             <nav class="main-nav">
-                <span id="user-level-display" class="level-badge">等级: 未定级</span>
+                <span id="user-level-display" class="level-badge hidden">等级: 未定级</span>
+                <span id="user-info" class="user-info hidden"></span>
+                <button id="logout-btn" class="btn btn-secondary btn-small hidden">退出</button>
+                <a href="login.html" id="login-link" class="nav-link">登录</a>
+                <a href="register.html" id="register-link" class="nav-link">注册</a>
+                <a href="login.html" id="parent-link" class="nav-link" onclick="return handleParentLinkClick(event)">家长</a>
                 <a href="growth-report.html" class="nav-link">📊 成长报告</a>
                 <a href="task-workshop.html" class="nav-link">🛠️ 任务工坊</a>
             </nav>
@@ -48,11 +53,11 @@
                 <article class="game-card" onclick="location.href='game-nback.html'">
                     <div class="game-icon">🧩</div>
                     <h3>时空密码</h3>
-                    <p class="game-dimension">工作记忆更新</p>
+                    <p class="game-dimension">工作记忆</p>
                     <p class="game-desc">训练位置和颜色的双重记忆能力</p>
                     <div class="game-tags">
                         <span class="tag tag-memory">记忆</span>
-                        <span class="tag tag-adaptive">自适应难度</span>
+                        <span class="tag tag-adaptive">自适应</span>
                     </div>
                 </article>
 
@@ -70,7 +75,7 @@
                 <article class="game-card" onclick="location.href='game-search.html'">
                     <div class="game-icon">🦜</div>
                     <h3>密林寻踪</h3>
-                    <p class="game-dimension">选择性注意力</p>
+                    <p class="game-dimension">视觉搜索</p>
                     <p class="game-desc">在复杂场景中找到目标生物</p>
                     <div class="game-tags">
                         <span class="tag tag-visual">视觉</span>
@@ -81,11 +86,55 @@
                 <article class="game-card" onclick="location.href='game-vigil.html'">
                     <div class="game-icon">📡</div>
                     <h3>要塞守望</h3>
-                    <p class="game-dimension">持续性注意力</p>
+                    <p class="game-dimension">持续注意</p>
                     <p class="game-desc">长时间保持警觉，发现隐藏信号</p>
                     <div class="game-tags">
                         <span class="tag tag-vigilance">警觉</span>
                         <span class="tag tag-endurance">持久</span>
+                    </div>
+                </article>
+
+                <article class="game-card" onclick="location.href='game-schulte.html'">
+                    <div class="game-icon">🎯</div>
+                    <h3>舒尔特方格</h3>
+                    <p class="game-dimension">注意力广度</p>
+                    <p class="game-desc">按顺序快速点击数字格训练视野</p>
+                    <div class="game-tags">
+                        <span class="tag tag-visual">视觉</span>
+                        <span class="tag tag-speed">速度</span>
+                    </div>
+                </article>
+
+                <article class="game-card" onclick="location.href='game-stroop.html'">
+                    <div class="game-icon">🎨</div>
+                    <h3>色彩Stroop</h3>
+                    <p class="game-dimension">抑制控制</p>
+                    <p class="game-desc">说出文字显示的颜色而非文字</p>
+                    <div class="game-tags">
+                        <span class="tag tag-control">自控</span>
+                        <span class="tag tag-cognitive">认知</span>
+                    </div>
+                </article>
+
+                <article class="game-card" onclick="location.href='game-auditory.html'">
+                    <div class="game-icon">👂</div>
+                    <h3>听觉追踪</h3>
+                    <p class="game-dimension">听觉记忆</p>
+                    <p class="game-desc">听数字序列回忆指定位置</p>
+                    <div class="game-tags">
+                        <span class="tag tag-audio">听觉</span>
+                        <span class="tag tag-memory">记忆</span>
+                    </div>
+                </article>
+
+                <article class="game-card" onclick="location.href='game-dual.html'">
+                    <div class="game-icon">🧠</div>
+                    <h3>双任务训练</h3>
+                    <p class="game-dimension">资源分配</p>
+                    <p class="game-desc">同时处理多个任务训练大脑效率</p>
+                    <div class="game-tags">
+                        <span class="tag tag-advanced">高阶</span>
+                        <span class="tag tag-multi">多任务</span>
                     </div>
                 </article>
             </div>
@@ -109,6 +158,8 @@
         </div>
     </footer>
 
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
     <script src="js/common.js"></script>
     <script src="js/home.js"></script>
 </body>

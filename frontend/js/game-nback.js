@@ -18,6 +18,7 @@ const GAME_CONFIG = {
 
 let gameState = {
     isRunning: false,
+    isPaused: false,
     history: [],
     currentN: 1,
     nStreak: 0,
@@ -32,7 +33,8 @@ let gameState = {
     intervalId: null,
     shown: false,
     currentCell: null,
-    currentColor: null
+    currentColor: null,
+    remainingTime: 300
 };
 
 let timer = null;
@@ -64,6 +66,7 @@ function createGrid() {
 function resetGameState() {
     gameState = {
         isRunning: false,
+        isPaused: false,
         history: [],
         currentN: 1,
         nStreak: 0,
@@ -78,13 +81,15 @@ function resetGameState() {
         intervalId: null,
         shown: false,
         currentCell: null,
-        currentColor: null
+        currentColor: null,
+        remainingTime: GAME_CONFIG.gameDuration
     };
 
     updateNDisplay();
     updateScoreDisplay({ score: 0 });
     updateComboDisplay({ combo: 0 });
     hideFeedback();
+    hidePauseOverlay();
 }
 
 function startGame() {
@@ -97,8 +102,11 @@ function startGame() {
 
     // 初始化计时器
     timer = new Timer({
-        duration: GAME_CONFIG.gameDuration,
-        onTick: updateTimerDisplay,
+        duration: gameState.remainingTime,
+        onTick: function(remaining) {
+            gameState.remainingTime = remaining;
+            updateTimerDisplay(remaining);
+        },
         onComplete: endGame
     });
 
@@ -108,8 +116,47 @@ function startGame() {
     showNextItem();
 }
 
-function showNextItem() {
+function togglePause() {
     if (!gameState.isRunning) return;
+    
+    gameState.isPaused = !gameState.isPaused;
+    
+    if (gameState.isPaused) {
+        timer.pause();
+        clearTimeout(gameState.timeoutId);
+        showPauseOverlay();
+    } else {
+        timer.resume();
+        hidePauseOverlay();
+        showNextItem();
+    }
+}
+
+function showPauseOverlay() {
+    const overlay = document.getElementById('pause-overlay');
+    if (overlay) {
+        overlay.classList.remove('hidden');
+    }
+}
+
+function hidePauseOverlay() {
+    const overlay = document.getElementById('pause-overlay');
+    if (overlay) {
+        overlay.classList.add('hidden');
+    }
+}
+
+function confirmExit() {
+    if (confirm('确定要退出游戏吗？当前进度将不会保存。')) {
+        gameState.isRunning = false;
+        timer.stop();
+        clearTimeout(gameState.timeoutId);
+        goHome();
+    }
+}
+
+function showNextItem() {
+    if (!gameState.isRunning || gameState.isPaused) return;
 
     // 清除当前显示
     clearCurrentDisplay();
@@ -140,7 +187,7 @@ function showNextItem() {
 
     // 启动响应超时计时器
     gameState.timeoutId = setTimeout(() => {
-        if (gameState.shown && gameState.isRunning) {
+        if (gameState.shown && gameState.isRunning && !gameState.isPaused) {
             // 超时未响应，视为错误
             handleTimeout();
         }
@@ -160,11 +207,11 @@ function clearCurrentDisplay() {
 }
 
 function handleCellClick(index) {
-    if (!gameState.isRunning || !gameState.shown) return;
+    if (!gameState.isRunning || !gameState.shown || gameState.isPaused) return;
 }
 
 function handleResponse(type) {
-    if (!gameState.isRunning || !gameState.shown) return;
+    if (!gameState.isRunning || !gameState.shown || gameState.isPaused) return;
 
     clearTimeout(gameState.timeoutId);
     gameState.shown = false;
@@ -379,24 +426,36 @@ function goHome() {
 
 // 键盘事件监听
 document.addEventListener('keydown', (e) => {
-    if (!gameState.isRunning || !gameState.shown) return;
+    if (!gameState.isRunning) return;
 
     switch (e.key) {
         case 'ArrowLeft':
-            e.preventDefault();
-            handleResponse('position-match');
+            if (!gameState.isPaused && gameState.shown) {
+                e.preventDefault();
+                handleResponse('position-match');
+            }
             break;
         case 'ArrowRight':
-            e.preventDefault();
-            handleResponse('position-no');
+            if (!gameState.isPaused && gameState.shown) {
+                e.preventDefault();
+                handleResponse('position-no');
+            }
             break;
         case 'ArrowUp':
-            e.preventDefault();
-            handleResponse('color-match');
+            if (!gameState.isPaused && gameState.shown) {
+                e.preventDefault();
+                handleResponse('color-match');
+            }
             break;
         case 'ArrowDown':
+            if (!gameState.isPaused && gameState.shown) {
+                e.preventDefault();
+                handleResponse('color-no');
+            }
+            break;
+        case 'Escape':
             e.preventDefault();
-            handleResponse('color-no');
+            togglePause();
             break;
     }
 });

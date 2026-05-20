@@ -25,6 +25,7 @@ const VIGIL_CONFIG = {
 
 let vigilState = {
     isRunning: false,
+    isPaused: false,
     score: 0,
     correct: 0,
     missed: 0,
@@ -36,7 +37,8 @@ let vigilState = {
     currentSignal: null,
     startTime: null,
     clickCount: 0,
-    lastClickTime: 0
+    lastClickTime: 0,
+    remainingTime: VIGIL_CONFIG.gameDuration
 };
 
 function initGame() {
@@ -51,7 +53,7 @@ function setupEventListeners() {
 }
 
 function handleContainerClick(e) {
-    if (!vigilState.isRunning) return;
+    if (!vigilState.isRunning || vigilState.isPaused) return;
     
     const now = Date.now();
     const timeSinceLastClick = now - vigilState.lastClickTime;
@@ -77,7 +79,7 @@ function handleContainerClick(e) {
 }
 
 function handleContainerDoubleClick(e) {
-    if (!vigilState.isRunning) return;
+    if (!vigilState.isRunning || vigilState.isPaused) return;
     
     if (vigilState.currentSignal && vigilState.currentSignal.action === 'double') {
         handleCorrectClick();
@@ -90,22 +92,25 @@ function startGame() {
     document.querySelector('.game-instructions').classList.add('hidden');
     document.getElementById('game-area').classList.remove('hidden');
     document.getElementById('result-area').classList.add('hidden');
+    hidePauseOverlay();
     
     resetGameState();
     vigilState.isRunning = true;
     vigilState.startTime = Date.now();
     
     vigilState.timer = setInterval(() => {
-        const elapsed = Math.floor((Date.now() - vigilState.startTime) / 1000);
-        const remaining = VIGIL_CONFIG.gameDuration - elapsed;
-        
-        if (remaining <= 0) {
-            endGame();
-        } else {
-            updateTimerDisplay(remaining);
+        if (!vigilState.isPaused) {
+            const elapsed = Math.floor((Date.now() - vigilState.startTime) / 1000);
+            vigilState.remainingTime = VIGIL_CONFIG.gameDuration - elapsed;
+            
+            if (vigilState.remainingTime <= 0) {
+                endGame();
+            } else {
+                updateTimerDisplay(vigilState.remainingTime);
+            }
+            
+            updateEnergyDecay();
         }
-        
-        updateEnergyDecay();
     }, 100);
     
     scheduleNextSignal();
@@ -123,6 +128,7 @@ function resetGameState() {
     
     vigilState = {
         isRunning: false,
+        isPaused: false,
         score: 0,
         correct: 0,
         missed: 0,
@@ -134,7 +140,8 @@ function resetGameState() {
         currentSignal: null,
         startTime: null,
         clickCount: 0,
-        lastClickTime: 0
+        lastClickTime: 0,
+        remainingTime: VIGIL_CONFIG.gameDuration
     };
     
     updateScoreDisplay({ score: 0 });
@@ -142,6 +149,7 @@ function resetGameState() {
     updateEnergyDisplay();
     updateTimerDisplay(VIGIL_CONFIG.gameDuration);
     hideFeedback();
+    hidePauseOverlay();
 }
 
 function updateEnergyDecay() {
@@ -171,18 +179,20 @@ function selectSignalType() {
 }
 
 function scheduleNextSignal() {
-    if (!vigilState.isRunning) return;
+    if (!vigilState.isRunning || vigilState.isPaused) return;
     
     const delay = VIGIL_CONFIG.minInterval + 
         Math.random() * (VIGIL_CONFIG.maxInterval - VIGIL_CONFIG.minInterval);
     
     vigilState.nextSignalTimeout = setTimeout(() => {
-        showSignal();
+        if (!vigilState.isPaused) {
+            showSignal();
+        }
     }, delay);
 }
 
 function showSignal() {
-    if (!vigilState.isRunning) return;
+    if (!vigilState.isRunning || vigilState.isPaused) return;
     
     clearTimeout(vigilState.nextSignalTimeout);
     
@@ -386,6 +396,52 @@ function restartGame() {
 function goHome() {
     window.location.href = 'index.html';
 }
+
+function togglePause() {
+    if (!vigilState.isRunning) return;
+    
+    vigilState.isPaused = !vigilState.isPaused;
+    
+    if (vigilState.isPaused) {
+        clearTimeout(vigilState.nextSignalTimeout);
+        clearTimeout(vigilState.signalTimer);
+        showPauseOverlay();
+    } else {
+        hidePauseOverlay();
+        scheduleNextSignal();
+    }
+}
+
+function showPauseOverlay() {
+    const overlay = document.getElementById('pause-overlay');
+    if (overlay) {
+        overlay.classList.remove('hidden');
+    }
+}
+
+function hidePauseOverlay() {
+    const overlay = document.getElementById('pause-overlay');
+    if (overlay) {
+        overlay.classList.add('hidden');
+    }
+}
+
+function confirmExit() {
+    if (confirm('确定要退出游戏吗？当前进度将不会保存。')) {
+        vigilState.isRunning = false;
+        clearInterval(vigilState.timer);
+        clearTimeout(vigilState.nextSignalTimeout);
+        clearTimeout(vigilState.signalTimer);
+        goHome();
+    }
+}
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && vigilState.isRunning) {
+        e.preventDefault();
+        togglePause();
+    }
+});
 
 document.addEventListener('DOMContentLoaded', () => {
     initGame();

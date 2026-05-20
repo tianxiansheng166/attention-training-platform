@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>舒尔特方格 - 专注力星球</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/game.css">
+    <style>
+        .schulte-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .game-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .game-title {
+            font-size: 28px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .game-subtitle {
+            font-size: 16px;
+            color: #7f8c8d;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #3498db;
+        }
+
+        .grid-container {
+            display: grid;
+            gap: 8px;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .grid-container.size-5 {
+            grid-template-columns: repeat(5, 1fr);
+        }
+
+        .grid-container.size-6 {
+            grid-template-columns: repeat(6, 1fr);
+        }
+
+        .grid-container.size-7 {
+            grid-template-columns: repeat(7, 1fr);
+        }
+
+        .grid-cell {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border-radius: 8px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .grid-cell:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .grid-cell:active {
+            transform: scale(0.95);
+        }
+
+        .grid-cell.correct {
+            background: #27ae60;
+            color: white;
+            animation: correctPulse 0.3s ease;
+        }
+
+        .grid-cell.wrong {
+            background: #e74c3c;
+            color: white;
+            animation: wrongShake 0.3s ease;
+        }
+
+        .grid-cell.next-hint {
+            background: #f39c12;
+            color: white;
+            animation: hintPulse 1s infinite;
+        }
+
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes wrongShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        @keyframes hintPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .game-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            font-size: 16px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn-secondary {
+            background: #ecf0f1;
+            color: #2c3e50;
+        }
+
+        .btn-secondary:hover {
+            background: #bdc3c7;
+        }
+
+        .difficulty-selector {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .difficulty-btn {
+            padding: 8px 20px;
+            border: 2px solid #3498db;
+            background: white;
+            color: #3498db;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .difficulty-btn.active {
+            background: #3498db;
+            color: white;
+        }
+
+        .game-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            z-index: 100;
+            display: none;
+        }
+
+        .game-message.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .message-title {
+            font-size: 28px;
+            color: #27ae60;
+            margin-bottom: 10px;
+        }
+
+        .message-stats {
+            font-size: 18px;
+            color: #2c3e50;
+            margin: 20px 0;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+            display: none;
+        }
+
+        .overlay.show {
+            display: block;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+
+        .start-screen {
+            text-align: center;
+            padding: 50px 20px;
+        }
+
+        .start-screen h2 {
+            font-size: 24px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .start-screen p {
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+
+        .cognitive-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            background: #e8f4fd;
+            color: #3498db;
+            border-radius: 15px;
+            font-size: 12px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="location.href='index.html'">← 返回</button>
+
+    <div class="schulte-container">
+        <div class="game-header">
+            <h1 class="game-title">🎯 舒尔特方格</h1>
+            <p class="game-subtitle">视觉搜索与注意力广度训练</p>
+            <div class="cognitive-tags">
+                <span class="cognitive-badge">视觉搜索</span>
+                <span class="cognitive-badge">注意力广度</span>
+                <span class="cognitive-badge">反应速度</span>
+            </div>
+        </div>
+
+        <div id="startScreen" class="start-screen">
+            <h2>训练说明</h2>
+            <p>
+                按顺序点击1到<span id="maxNumber">25</span>的数字<br>
+                用时越短，说明你的注意力广度越好！<br>
+                <strong>请在完成所有数字后再松手</strong>
+            </p>
+
+            <div class="difficulty-selector">
+                <button class="difficulty-btn active" data-size="5" onclick="selectDifficulty(5)">5×5 入门</button>
+                <button class="difficulty-btn" data-size="6" onclick="selectDifficulty(6)">6×6 进阶</button>
+                <button class="difficulty-btn" data-size="7" onclick="selectDifficulty(7)">7×7 挑战</button>
+            </div>
+
+            <button class="btn btn-primary" onclick="startGame()">开始训练</button>
+        </div>
+
+        <div id="gameArea" style="display: none;">
+            <button class="pause-button" onclick="togglePause()">⏸️</button>
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="stat-label">当前目标</div>
+                    <div class="stat-value" id="currentTarget">1</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">已完成</div>
+                    <div class="stat-value" id="completed">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">用时</div>
+                    <div class="stat-value" id="timer">0.0s</div>
+                </div>
+            </div>
+
+            <div class="grid-container size-5" id="grid"></div>
+
+            <div class="game-controls">
+                <button class="btn btn-secondary" onclick="restartGame()">重新开始</button>
+                <button class="btn btn-secondary" onclick="showStart()">返回</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="game-message" id="resultMessage">
+        <h2 class="message-title">🎉 训练完成！</h2>
+        <div class="message-stats">
+            <p>用时：<strong id="finalTime">0</strong> 秒</p>
+            <p>正确率：<strong id="finalAccuracy">100</strong>%</p>
+            <p>评级：<strong id="finalGrade">优秀</strong></p>
+        </div>
+        <button class="btn btn-primary" onclick="restartGame()">再来一次</button>
+    </div>
+
+    <div id="pause-overlay" class="hidden">
+        <div class="pause-content">
+            <div class="pause-icon">⏸️</div>
+            <h2>游戏暂停</h2>
+            <div class="pause-buttons">
+                <button class="pause-btn resume" onclick="togglePause()">继续游戏</button>
+                <button class="pause-btn exit" onclick="confirmExit()">退出游戏</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/game-schulte.js"></script>
+</body>
+</html>

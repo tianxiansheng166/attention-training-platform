@@ -17,6 +17,7 @@ const GAME_CONFIG = {
 
 let gameState = {
     isRunning: false,
+    isPaused: false,
     phase: 1,
     score: 0,
     combo: 0,
@@ -48,6 +49,7 @@ function startGame() {
 function resetGameState() {
     gameState = {
         isRunning: false,
+        isPaused: false,
         phase: 1,
         score: 0,
         combo: 0,
@@ -62,27 +64,26 @@ function resetGameState() {
     };
     updateDisplay();
     setRuleDisplay();
+    hidePauseOverlay();
 }
 
 function showSignal() {
-    if (!gameState.isRunning) return;
+    if (!gameState.isRunning || gameState.isPaused) return;
 
-    // 清除当前显示
     const indicator = document.getElementById('go-indicator');
     indicator.className = 'go-indicator waiting';
     indicator.textContent = '⏳';
 
-    // 随机决定是Go还是No-Go
     const isGo = Math.random() < GAME_CONFIG.goRatio;
     gameState.isGoSignal = isGo;
 
-    // 延迟后显示信号
     const delay = GAME_CONFIG.intervalMin +
         Math.random() * (GAME_CONFIG.intervalMax - GAME_CONFIG.intervalMin);
 
     gameState.timeoutId = setTimeout(() => {
+        if (gameState.isPaused) return;
+        
         if (isGo) {
-            // 根据阶段决定颜色
             if (gameState.phase === 1) {
                 indicator.className = 'go-indicator go';
                 indicator.textContent = '🚀';
@@ -108,10 +109,8 @@ function showSignal() {
 
         indicator.classList.add('flash');
 
-        // 信号显示时间
         gameState.intervalId = setTimeout(() => {
-            if (gameState.isRunning) {
-                // 超时未响应
+            if (gameState.isRunning && !gameState.isPaused) {
                 handleTimeout();
             }
         }, GAME_CONFIG.trialDuration);
@@ -119,8 +118,46 @@ function showSignal() {
     }, delay);
 }
 
-function handleResponse() {
+function togglePause() {
     if (!gameState.isRunning) return;
+    
+    gameState.isPaused = !gameState.isPaused;
+    
+    if (gameState.isPaused) {
+        clearTimeout(gameState.timeoutId);
+        clearTimeout(gameState.intervalId);
+        showPauseOverlay();
+    } else {
+        hidePauseOverlay();
+        showSignal();
+    }
+}
+
+function showPauseOverlay() {
+    const overlay = document.getElementById('pause-overlay');
+    if (overlay) {
+        overlay.classList.remove('hidden');
+    }
+}
+
+function hidePauseOverlay() {
+    const overlay = document.getElementById('pause-overlay');
+    if (overlay) {
+        overlay.classList.add('hidden');
+    }
+}
+
+function confirmExit() {
+    if (confirm('确定要退出游戏吗？当前进度将不会保存。')) {
+        gameState.isRunning = false;
+        clearTimeout(gameState.timeoutId);
+        clearTimeout(gameState.intervalId);
+        goHome();
+    }
+}
+
+function handleResponse() {
+    if (!gameState.isRunning || gameState.isPaused) return;
 
     clearTimeout(gameState.intervalId);
     gameState.total++;
@@ -128,27 +165,23 @@ function handleResponse() {
     const signal = gameState.currentSignal;
 
     if (signal === 'go-green') {
-        // 应该响应，正确
         addScore(true);
         gameState.correct++;
         gameState.phaseCorrect++;
         gameState.phaseTotal++;
         showFeedback(true, '✓ 正确拦截！');
     } else if (signal === 'nogo-red') {
-        // 不应该响应，错误
         addScore(false);
         gameState.incorrect++;
         gameState.phaseTotal++;
         showFeedback(false, '✗ 错误！不应拦截');
     }
 
-    // 检查是否进入下一阶段
     checkPhaseChange();
     updateDisplay();
 
-    // 继续下一轮
     setTimeout(() => {
-        if (gameState.isRunning) {
+        if (gameState.isRunning && !gameState.isPaused) {
             showSignal();
         }
     }, 1000);
@@ -291,14 +324,18 @@ function goHome() {
 
 // 事件监听
 document.addEventListener('keydown', (e) => {
-    if (e.code === 'Space' && gameState.isRunning) {
+    if (e.code === 'Space' && gameState.isRunning && !gameState.isPaused) {
         e.preventDefault();
         handleResponse();
+    }
+    if (e.key === 'Escape' && gameState.isRunning) {
+        e.preventDefault();
+        togglePause();
     }
 });
 
 document.getElementById('go-indicator')?.addEventListener('click', () => {
-    if (gameState.isRunning) {
+    if (gameState.isRunning && !gameState.isPaused) {
         handleResponse();
     }
 });

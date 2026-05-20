@@ -3,9 +3,10 @@
  * 提供计分器、计时器、数据存储等通用功能
  */
 
-const API_BASE_URL = window.location.hostname === 'localhost'
+// 使用 config.js 中统一的 API 配置
+const API_BASE_URL = typeof CONFIG !== 'undefined' ? CONFIG.API_BASE : (window.location.hostname === 'localhost'
     ? 'http://localhost:3000'
-    : `http://${window.location.host}`;
+    : `http://${window.location.host}`);
 
 // ========================================
 // 存储服务
@@ -184,7 +185,22 @@ class Timer {
     }
 
     pause() {
-        this.stop();
+        if (!this.isRunning) return;
+        clearInterval(this.intervalId);
+        this.intervalId = null;
+        this.isRunning = false;
+    }
+
+    resume() {
+        if (this.isRunning || this.remaining <= 0) return;
+        this.isRunning = true;
+        this.intervalId = setInterval(() => {
+            this.remaining--;
+            this.onTick(this.remaining);
+            if (this.remaining <= 0) {
+                this.complete();
+            }
+        }, 1000);
     }
 
     reset() {
@@ -313,12 +329,18 @@ class ScoreManager {
 }
 
 // ========================================
-// API 服务
+// API 服务（使用统一的 api.js 客户端）
 // ========================================
 
 const API = {
     // 任务分解
     async decomposeTask(task) {
+        if (typeof window.api !== 'undefined') {
+            return window.api.request('/api/decompose', {
+                method: 'POST',
+                body: JSON.stringify({ task })
+            });
+        }
         try {
             const response = await fetch(`${API_BASE_URL}/api/decompose`, {
                 method: 'POST',
@@ -341,6 +363,12 @@ const API = {
 
     // 生成报告
     async generateReport(data) {
+        if (typeof window.api !== 'undefined') {
+            return window.api.request('/api/report', {
+                method: 'POST',
+                body: JSON.stringify(data)
+            });
+        }
         try {
             const response = await fetch(`${API_BASE_URL}/api/report`, {
                 method: 'POST',
@@ -363,6 +391,12 @@ const API = {
 
     // 健康检查
     async healthCheck() {
+        if (typeof window.api !== 'undefined') {
+            return window.api.request('/api/health').catch(error => {
+                console.error('API healthCheck error:', error);
+                return { status: 'error', message: error.message };
+            });
+        }
         try {
             const response = await fetch(`${API_BASE_URL}/api/health`);
             return await response.json();

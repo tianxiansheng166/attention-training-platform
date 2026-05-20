@@ -105,7 +105,17 @@ function handleTestClick() {
 
     clearTimeout(testState.timeoutId);
 
-    const currentTrial = testState.trials[testState.trials.length - 1];
+    // 安全获取当前试次，如果不存在则创建一个
+    let currentTrial = testState.trials[testState.trials.length - 1];
+    if (!currentTrial) {
+        currentTrial = {
+            type: circle.classList.contains('green') ? 'green' : 'red',
+            responded: false,
+            correct: false,
+            reactionTime: null
+        };
+        testState.trials.push(currentTrial);
+    }
 
     if (circle.classList.contains('green')) {
         // 绿色点击是正确的
@@ -258,7 +268,97 @@ document.getElementById('test-circle')?.addEventListener('click', () => {
 // 初始化
 // ========================================
 
+function updateAuthUI() {
+    const userInfo = document.getElementById('user-info');
+    const loginLink = document.getElementById('login-link');
+    const registerLink = document.getElementById('register-link');
+    const logoutBtn = document.getElementById('logout-btn');
+    const levelDisplay = document.getElementById('user-level-display');
+    const parentLink = document.getElementById('parent-link');
+
+    if (api.isLoggedIn()) {
+        const user = api.getCurrentUser();
+        userInfo.textContent = user.name || user.email.split('@')[0];
+        userInfo.classList.remove('hidden');
+        logoutBtn.classList.remove('hidden');
+        loginLink.classList.add('hidden');
+        registerLink.classList.add('hidden');
+        levelDisplay.classList.remove('hidden');
+        
+        // 添加个人中心链接
+        if (user.role !== 'parent') {
+            let profileLink = document.getElementById('profile-link');
+            if (!profileLink) {
+                profileLink = document.createElement('a');
+                profileLink.id = 'profile-link';
+                profileLink.href = 'profile.html';
+                profileLink.className = 'nav-link';
+                profileLink.textContent = '👤 个人中心';
+                registerLink.parentNode.insertBefore(profileLink, registerLink);
+            } else {
+                profileLink.classList.remove('hidden');
+            }
+            
+            // 儿童登录时隐藏家长链接
+            if (parentLink) {
+                parentLink.classList.add('hidden');
+            }
+        } else {
+            // 家长登录时显示家长链接
+            if (parentLink) {
+                parentLink.classList.remove('hidden');
+            }
+        }
+    } else {
+        userInfo.classList.add('hidden');
+        logoutBtn.classList.add('hidden');
+        loginLink.classList.remove('hidden');
+        registerLink.classList.remove('hidden');
+        levelDisplay.classList.add('hidden');
+        
+        const profileLink = document.getElementById('profile-link');
+        if (profileLink) {
+            profileLink.classList.add('hidden');
+        }
+        
+        // 未登录时显示家长链接
+        if (parentLink) {
+            parentLink.classList.remove('hidden');
+        }
+    }
+}
+
+function handleParentLinkClick(event) {
+    if (api.isLoggedIn()) {
+        const user = api.getCurrentUser();
+        if (user && user.role === 'child') {
+            // 儿童用户点击家长链接，跳转到登录页面
+            event.preventDefault();
+            window.location.href = 'login.html';
+            return false;
+        }
+    }
+    // 未登录或家长用户，正常跳转到 parent.html
+    event.target.href = 'parent.html';
+    return true;
+}
+
+function handleLogout() {
+    api.clearAuth();
+    updateAuthUI();
+    window.location.href = 'index.html';
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+    // 更新认证UI
+    updateAuthUI();
+
+    // 退出登录按钮
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', handleLogout);
+    }
+
     // 更新等级显示
     const currentLevel = Storage.getUserLevel();
     const levelDisplay = document.getElementById('user-level-display');

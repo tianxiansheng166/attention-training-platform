@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人中心 - 专注力星球</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/profile.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部导航 -->
+        <nav class="top-nav">
+            <div class="nav-left">
+                <a href="index.html" class="nav-back">← 首页</a>
+            </div>
+            <h1 class="nav-title">个人中心</h1>
+            <div class="nav-right">
+                <button onclick="logout()" class="btn-text">退出</button>
+            </div>
+        </nav>
+
+        <!-- 用户信息卡片 -->
+        <section class="profile-header">
+            <div class="avatar-section">
+                <div id="userAvatar" class="avatar-large">👶</div>
+                <div class="user-info">
+                    <h2 id="userName">加载中...</h2>
+                    <p id="userEmail" class="user-email"></p>
+                    <div id="userBadges" class="user-badges"></div>
+                </div>
+            </div>
+            <div class="profile-stats">
+                <div class="stat-box">
+                    <div class="stat-number" id="totalGames">0</div>
+                    <div class="stat-label">训练次数</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number" id="totalTime">0</div>
+                    <div class="stat-label">总时长(分钟)</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number" id="avgScore">0</div>
+                    <div class="stat-label">平均分数</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 成长进度 -->
+        <section class="section">
+            <h3 class="section-title">📈 成长进度</h3>
+            <div class="progress-cards">
+                <div class="progress-card">
+                    <div class="progress-header">
+                        <span>本周训练</span>
+                        <span id="weeklyProgress">0/7 天</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div id="weeklyBar" class="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="progress-card">
+                    <div class="progress-header">
+                        <span>连续训练</span>
+                        <span id="streakDays">0 天</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div id="streakBar" class="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 认知能力 -->
+        <section class="section">
+            <h3 class="section-title">🧠 认知能力</h3>
+            <div class="cognitive-grid" id="cognitiveGrid">
+                <div class="cognitive-card">
+                    <div class="cognitive-icon">🎯</div>
+                    <div class="cognitive-name">注意力</div>
+                    <div class="cognitive-score" id="attentionScore">--</div>
+                </div>
+                <div class="cognitive-card">
+                    <div class="cognitive-icon">🧩</div>
+                    <div class="cognitive-name">记忆力</div>
+                    <div class="cognitive-score" id="memoryScore">--</div>
+                </div>
+                <div class="cognitive-card">
+                    <div class="cognitive-icon">⚡</div>
+                    <div class="cognitive-name">反应力</div>
+                    <div class="cognitive-score" id="reactionScore">--</div>
+                </div>
+                <div class="cognitive-card">
+                    <div class="cognitive-icon">🎮</div>
+                    <div class="cognitive-name">自控力</div>
+                    <div class="cognitive-score" id="controlScore">--</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 游戏历史 -->
+        <section class="section">
+            <h3 class="section-title">📋 训练记录</h3>
+            <div id="historyList" class="history-list">
+                <div class="loading-text">加载中...</div>
+            </div>
+            <button id="loadMoreBtn" class="btn btn-secondary" onclick="loadMoreHistory()" style="display:none;">
+                加载更多
+            </button>
+        </section>
+
+        <!-- 已获得成就 -->
+        <section class="section">
+            <h3 class="section-title">🏆 已获得成就</h3>
+            <div id="achievementList" class="achievement-grid">
+                <div class="loading-text">加载中...</div>
+            </div>
+        </section>
+
+        <!-- 家长绑定 -->
+        <section class="section">
+            <h3 class="section-title">👨‍👩‍👧 家长绑定</h3>
+            <div class="parent-binding-card">
+                <div id="bindingStatus">
+                    <p class="binding-tip">将下面的邀请码告诉家长，让家长绑定你的账号</p>
+                    <div class="invite-code-box">
+                        <span id="inviteCode" class="invite-code">加载中...</span>
+                        <button onclick="copyCode()" class="btn btn-small">复制</button>
+                    </div>
+                    <p id="bindingTip" class="binding-tip-small">家长绑定后可查看你的训练记录</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/common.js"></script>
+    <script>
+        // 状态
+        const state = {
+            currentUser: null,
+            historyPage: 1,
+            hasMoreHistory: false,
+            stats: null
+        };
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            loadProfile();
+            loadStats();
+            loadHistory();
+            loadAchievements();
+        });
+
+        // 检查认证
+        function checkAuth() {
+            if (!api.isLoggedIn()) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            const user = api.getCurrentUser();
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            if (user.role === 'parent') {
+                window.location.href = 'parent.html';
+                return;
+            }
+            
+            state.currentUser = user;
+            updateUserUI(user);
+        }
+
+        // 更新用户UI
+        function updateUserUI(user) {
+            // 兼容不同的数据结构
+            const userData = user.data?.user || user;
+            
+            document.getElementById('userName').textContent = userData.name || userData.username || '神秘小勇士';
+            document.getElementById('userEmail').textContent = userData.email || '';
+            
+            if (userData.avatar) {
+                document.getElementById('userAvatar').textContent = userData.avatar;
+            }
+            
+            // 确保邀请码能正确显示
+            if (userData.inviteCode) {
+                document.getElementById('inviteCode').textContent = userData.inviteCode;
+            } else {
+                // 如果localStorage中有邀请码也显示
+                const localUser = api.getCurrentUser();
+                if (localUser && localUser.inviteCode) {
+                    document.getElementById('inviteCode').textContent = localUser.inviteCode;
+                }
+            }
+        }
+
+        // 加载统计
+        async function loadStats() {
+            try {
+                const result = await api.game.getStats();
+                const stats = result.data || result;
+                state.stats = stats;
+                
+                document.getElementById('totalGames').textContent = stats.totalGames || 0;
+                document.getElementById('totalTime').textContent = Math.round((stats.totalTime || 0) / 60);
+                document.getElementById('avgScore').textContent = stats.avgScore || 0;
+                
+                if (stats.weeklyProgress !== undefined) {
+                    document.getElementById('weeklyProgress').textContent = `${stats.weeklyProgress}/7 天`;
+                    document.getElementById('weeklyBar').style.width = `${(stats.weeklyProgress / 7) * 100}%`;
+                }
+                
+                if (stats.streakDays !== undefined) {
+                    document.getElementById('streakDays').textContent = `${stats.streakDays} 天`;
+                    document.getElementById('streakBar').style.width = `${Math.min((stats.streakDays / 7) * 100, 100)}%`;
+                }
+                
+                if (stats.cognitive) {
+                    updateCognitiveScores(stats.cognitive);
+                }
+            } catch (error) {
+                console.error('加载统计失败:', error);
+            }
+        }
+
+        // 更新认知分数
+        function updateCognitiveScores(cognitive) {
+            document.getElementById('attentionScore').textContent = 
+                cognitive.attention ? `${cognitive.attention}分` : '--';
+            document.getElementById('memoryScore').textContent = 
+                cognitive.memory ? `${cognitive.memory}分` : '--';
+            document.getElementById('reactionScore').textContent = 
+                cognitive.reaction ? `${cognitive.reaction}分` : '--';
+            document.getElementById('controlScore').textContent = 
+                cognitive.control ? `${cognitive.control}分` : '--';
+        }
+
+        // 加载历史
+        async function loadHistory() {
+            try {
+                const result = await api.game.getHistory({ page: 1, limit: 10 });
+                const data = result.data || result;
+                const history = Array.isArray(data) ? data : (data.history || []);
+                
+                renderHistory(history);
+                
+                state.hasMoreHistory = history.length >= 10;
+                document.getElementById('loadMoreBtn').style.display = 
+                    state.hasMoreHistory ? 'block' : 'none';
+            } catch (error) {
+                console.error('加载历史失败:', error);
+                document.getElementById('historyList').innerHTML = 
+                    '<div class="empty-text">暂无训练记录</div>';
+            }
+        }
+
+        // 渲染历史
+        function renderHistory(history) {
+            if (!history || history.length === 0) {
+                document.getElementById('historyList').innerHTML = 
+                    '<div class="empty-text">还没有开始训练哦，快去玩游戏吧！</div>';
+                return;
+            }
+            
+            const html = history.map(record => `
+                <div class="history-item">
+                    <div class="history-icon">${getGameIcon(record.gameType)}</div>
+                    <div class="history-content">
+                        <div class="history-title">${getGameName(record.gameType)}</div>
+                        <div class="history-meta">
+                            <span>${formatDate(record.createdAt)}</span>
+                            <span>用时 ${Math.round(record.duration / 60)}分钟</span>
+                        </div>
+                    </div>
+                    <div class="history-score">
+                        <div class="score-value">${record.score || 0}</div>
+                        <div class="score-label">得分</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            document.getElementById('historyList').innerHTML = html;
+        }
+
+        // 加载更多历史
+        async function loadMoreHistory() {
+            state.historyPage++;
+            
+            try {
+                const result = await api.game.getHistory({ 
+                    page: state.historyPage, 
+                    limit: 10 
+                });
+                const data = result.data || result;
+                const history = Array.isArray(data) ? data : (data.history || []);
+                
+                const html = history.map(record => `
+                    <div class="history-item">
+                        <div class="history-icon">${getGameIcon(record.gameType)}</div>
+                        <div class="history-content">
+                            <div class="history-title">${getGameName(record.gameType)}</div>
+                            <div class="history-meta">
+                                <span>${formatDate(record.createdAt)}</span>
+                                <span>用时 ${Math.round(record.duration / 60)}分钟</span>
+                            </div>
+                        </div>
+                        <div class="history-score">
+                            <div class="score-value">${record.score || 0}</div>
+                            <div class="score-label">得分</div>
+                        </div>
+                    </div>
+                `).join('');
+                
+                document.getElementById('historyList').insertAdjacentHTML('beforeend', html);
+                
+                state.hasMoreHistory = history.length >= 10;
+                document.getElementById('loadMoreBtn').style.display = 
+                    state.hasMoreHistory ? 'block' : 'none';
+            } catch (error) {
+                console.error('加载更多历史失败:', error);
+                state.historyPage--;
+            }
+        }
+
+        // 加载成就
+        async function loadAchievements() {
+            try {
+                const result = await api.achievement.getUnlocked();
+                const achievements = result.data || result;
+                
+                if (!achievements || achievements.length === 0) {
+                    document.getElementById('achievementList').innerHTML = 
+                        '<div class="empty-text">还没有获得成就，继续加油！</div>';
+                    return;
+                }
+                
+                const html = achievements.map(achievement => `
+                    <div class="achievement-item">
+                        <div class="achievement-icon">${achievement.icon || '🏆'}</div>
+                        <div class="achievement-name">${achievement.name}</div>
+                        <div class="achievement-desc">${achievement.description}</div>
+                    </div>
+                `).join('');
+                
+                document.getElementById('achievementList').innerHTML = html;
+            } catch (error) {
+                console.error('加载成就失败:', error);
+                document.getElementById('achievementList').innerHTML = 
+                    '<div class="empty-text">加载成就失败</div>';
+            }
+        }
+
+        // 加载个人资料
+        async function loadProfile() {
+            try {
+                const result = await api.auth.getProfile();
+                const user = result.data?.user || result.data || result;
+                
+                if (user) {
+                    state.currentUser = user;
+                    updateUserUI(user);
+                    
+                    // 更新 localStorage 中的用户信息，确保邀请码被保存
+                    const currentLocalUser = api.getCurrentUser();
+                    if (currentLocalUser && user.inviteCode && !currentLocalUser.inviteCode) {
+                        currentLocalUser.inviteCode = user.inviteCode;
+                        api.setAuth(api.getToken(), currentLocalUser);
+                    }
+                }
+            } catch (error) {
+                console.error('加载资料失败:', error);
+            }
+        }
+
+        // 复制邀请码
+        function copyCode() {
+            const code = document.getElementById('inviteCode').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                alert('邀请码已复制！');
+            }).catch(() => {
+                prompt('请手动复制邀请码：', code);
+            });
+        }
+
+        // 登出
+        function logout() {
+            if (confirm('确定要退出登录吗？')) {
+                api.clearAuth();
+                window.location.href = 'login.html';
+            }
+        }
+
+        // 获取游戏图标
+        function getGameIcon(gameType) {
+            const icons = {
+                'nback': '🧩',
+                'stop': '🛑',
+                'search': '🦜',
+                'vigil': '📡',
+                'schulte': '🎯',
+                'stroop': '🎨',
+                'auditory': '👂',
+                'dual': '🧠'
+            };
+            return icons[gameType] || '🎮';
+        }
+
+        // 获取游戏名称
+        function getGameName(gameType) {
+            const names = {
+                'nback': '时空密码',
+                'stop': '星际拦截',
+                'search': '密林寻踪',
+                'vigil': '要塞守望',
+                'schulte': '舒尔特方格',
+                'stroop': '色彩Stroop',
+                'auditory': '听觉追踪',
+                'dual': '双任务训练'
+            };
+            return names[gameType] || '训练游戏';
+        }
+
+        // 格式化日期
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diff = now - date;
+            
+            if (diff < 60000) return '刚刚';
+            if (diff < 3600000) return `${Math.floor(diff / 60000)}分钟前`;
+            if (diff < 86400000) return `${Math.floor(diff / 3600000)}小时前`;
+            if (diff < 604800000) return `${Math.floor(diff / 86400000)}天前`;
+            
+            return date.toLocaleDateString('zh-CN');
+        }
+    </script>
+</body>
+</html>

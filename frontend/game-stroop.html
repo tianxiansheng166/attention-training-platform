@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>色彩Stroop - 专注力星球</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .stroop-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .game-header {
+            margin-bottom: 30px;
+        }
+
+        .game-title {
+            font-size: 32px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .game-subtitle {
+            font-size: 16px;
+            color: #7f8c8d;
+        }
+
+        .cognitive-tags {
+            margin-top: 15px;
+        }
+
+        .cognitive-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            background: #f8f9fa;
+            color: #3498db;
+            border-radius: 15px;
+            font-size: 12px;
+            margin: 5px;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #3498db;
+        }
+
+        .stimulus-area {
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .stroop-word {
+            font-size: 72px;
+            font-weight: bold;
+            padding: 40px 80px;
+            border-radius: 20px;
+            background: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .instructions {
+            font-size: 18px;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+
+        .instructions strong {
+            color: #e74c3c;
+        }
+
+        .response-area {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .response-btn {
+            padding: 25px;
+            font-size: 24px;
+            font-weight: bold;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: white;
+        }
+
+        .response-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .response-btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-red { background: #e74c3c; }
+        .btn-blue { background: #3498db; }
+        .btn-green { background: #27ae60; }
+        .btn-yellow { background: #f39c12; }
+
+        .feedback {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 120px;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .feedback.show {
+            animation: feedbackPop 0.5s ease;
+        }
+
+        @keyframes feedbackPop {
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .difficulty-selector {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .difficulty-btn {
+            padding: 12px 25px;
+            border: 2px solid #3498db;
+            background: white;
+            color: #3498db;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .difficulty-btn.active {
+            background: #3498db;
+            color: white;
+        }
+
+        .start-screen {
+            padding: 50px 20px;
+            text-align: center;
+        }
+
+        .start-screen h2 {
+            font-size: 24px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .start-screen p {
+            color: #7f8c8d;
+            line-height: 1.8;
+            max-width: 500px;
+            margin: 0 auto 30px;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            font-size: 18px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(52, 152, 219, 0.4);
+        }
+
+        .game-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 40px 60px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            z-index: 100;
+            display: none;
+        }
+
+        .game-message.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .message-title {
+            font-size: 32px;
+            color: #27ae60;
+            margin-bottom: 20px;
+        }
+
+        .message-stats {
+            font-size: 20px;
+            color: #2c3e50;
+            margin: 20px 0;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+            display: none;
+        }
+
+        .overlay.show {
+            display: block;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #ecf0f1;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="location.href='index.html'">← 返回</button>
+
+    <div class="stroop-container">
+        <div class="game-header">
+            <h1 class="game-title">🎨 色彩Stroop</h1>
+            <p class="game-subtitle">抑制控制与认知灵活性训练</p>
+            <div class="cognitive-tags">
+                <span class="cognitive-badge">抑制控制</span>
+                <span class="cognitive-badge">认知灵活性</span>
+                <span class="cognitive-badge">反应抑制</span>
+            </div>
+        </div>
+
+        <div id="startScreen" class="start-screen">
+            <h2>训练说明</h2>
+            <p>
+                屏幕上会显示一个颜色词（如"红"），但这个词是用<strong>其他颜色</strong>显示的。<br><br>
+                你的任务是：<strong>说出文字显示的颜色，而不是文字本身！</strong><br><br>
+                例如：显示"红"字但用<strong style="color: blue;">蓝色</strong>显示，你应该点击<strong>蓝色按钮</strong>！
+            </p>
+
+            <div class="difficulty-selector">
+                <button class="difficulty-btn active" data-level="1" onclick="selectLevel(1)">入门 20题</button>
+                <button class="difficulty-btn" data-level="2" onclick="selectLevel(2)">进阶 30题</button>
+                <button class="difficulty-btn" data-level="3" onclick="selectLevel(3)">挑战 40题</button>
+            </div>
+
+            <button class="btn btn-primary" onclick="startGame()">开始训练</button>
+        </div>
+
+        <div id="gameArea" style="display: none;">
+            <button class="pause-button" onclick="togglePause()">⏸️</button>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="stat-label">当前题目</div>
+                    <div class="stat-value" id="currentQuestion">1</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">正确</div>
+                    <div class="stat-value" id="correctCount">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">用时</div>
+                    <div class="stat-value" id="timer">0.0s</div>
+                </div>
+            </div>
+
+            <div class="instructions">
+                说出文字显示的<strong>颜色</strong>，而不是文字！
+            </div>
+
+            <div class="stimulus-area">
+                <div class="stroop-word" id="stimulus">红</div>
+            </div>
+
+            <div class="response-area">
+                <button class="response-btn btn-red" onclick="handleResponse('red')">红</button>
+                <button class="response-btn btn-blue" onclick="handleResponse('blue')">蓝</button>
+                <button class="response-btn btn-green" onclick="handleResponse('green')">绿</button>
+                <button class="response-btn btn-yellow" onclick="handleResponse('yellow')">黄</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+    <div class="overlay" id="overlay"></div>
+    <div class="game-message" id="resultMessage">
+        <h2 class="message-title">🎉 训练完成！</h2>
+        <div class="message-stats">
+            <p>正确率：<strong id="finalAccuracy">0</strong>%</p>
+            <p>用时：<strong id="finalTime">0</strong> 秒</p>
+            <p>评级：<strong id="finalGrade">合格</strong></p>
+        </div>
+        <button class="btn btn-primary" onclick="restartGame()">再来一次</button>
+    </div>
+
+    <div id="pause-overlay" class="hidden">
+        <div class="pause-content">
+            <div class="pause-icon">⏸️</div>
+            <h2>游戏暂停</h2>
+            <div class="pause-buttons">
+                <button class="pause-btn resume" onclick="togglePause()">继续游戏</button>
+                <button class="pause-btn exit" onclick="confirmExit()">退出游戏</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/game-stroop.js"></script>
+</body>
+</html>

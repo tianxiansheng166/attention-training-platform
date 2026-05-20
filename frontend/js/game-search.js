@@ -26,6 +26,7 @@ const SEARCH_CONFIG = {
 
 let searchState = {
     isRunning: false,
+    isPaused: false,
     score: 0,
     combo: 0,
     maxCombo: 0,
@@ -72,13 +73,15 @@ function startGame() {
     searchState.startTime = Date.now();
     
     searchState.timer = setInterval(() => {
-        const elapsed = Math.floor((Date.now() - searchState.startTime) / 1000);
-        const remaining = SEARCH_CONFIG.gameDuration - elapsed;
-        
-        if (remaining <= 0) {
-            endGame();
-        } else {
-            updateTimerDisplay(remaining);
+        if (!searchState.isPaused) {
+            const elapsed = Math.floor((Date.now() - searchState.startTime) / 1000);
+            const remaining = SEARCH_CONFIG.gameDuration - elapsed;
+            
+            if (remaining <= 0) {
+                endGame();
+            } else {
+                updateTimerDisplay(remaining);
+            }
         }
     }, 1000);
     
@@ -89,6 +92,7 @@ function startGame() {
 function resetGameState() {
     searchState = {
         isRunning: false,
+        isPaused: false,
         score: 0,
         combo: 0,
         maxCombo: 0,
@@ -186,7 +190,7 @@ function renderItems() {
 }
 
 function handleItemClick(id) {
-    if (!searchState.isRunning) return;
+    if (!searchState.isRunning || searchState.isPaused) return;
     
     const item = searchState.items.find(i => i.id === id);
     if (!item || item.found) return;
@@ -316,6 +320,33 @@ function restartGame() {
 function goHome() {
     window.location.href = 'index.html';
 }
+
+function togglePause() {
+    if (!searchState.isRunning) return;
+    
+    searchState.isPaused = !searchState.isPaused;
+    
+    if (searchState.isPaused) {
+        document.getElementById('pause-overlay').classList.remove('hidden');
+    } else {
+        document.getElementById('pause-overlay').classList.add('hidden');
+    }
+}
+
+function confirmExit() {
+    if (confirm('确定要退出游戏吗？当前进度将不会保存。')) {
+        searchState.isRunning = false;
+        clearInterval(searchState.timer);
+        goHome();
+    }
+}
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && searchState.isRunning) {
+        e.preventDefault();
+        togglePause();
+    }
+});
 
 document.addEventListener('DOMContentLoaded', () => {
     initGame();

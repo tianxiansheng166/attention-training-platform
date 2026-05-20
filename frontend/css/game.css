@@ -415,3 +415,117 @@ kbd {
 .shake {
     animation: shake 0.3s ease-in-out;
 }
+
+/* ========================================
+   暂停界面样式
+   ======================================== */
+
+#pause-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+#pause-overlay.hidden,
+#pause-overlay:not(.show) {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+#pause-overlay.show,
+#pause-overlay:not(.hidden) {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.pause-content {
+    background: var(--white);
+    padding: var(--spacing-2xl);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-2xl);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+}
+
+.pause-content h2 {
+    font-size: var(--text-3xl);
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: var(--spacing-lg);
+}
+
+.pause-content .pause-icon {
+    font-size: 4rem;
+    margin-bottom: var(--spacing-lg);
+}
+
+.pause-buttons {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.pause-btn {
+    padding: var(--spacing-md) var(--spacing-xl);
+    border-radius: var(--radius-lg);
+    font-size: var(--text-base);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    border: none;
+    min-width: 120px;
+}
+
+.pause-btn.resume {
+    background: var(--primary);
+    color: var(--white);
+}
+
+.pause-btn.resume:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+.pause-btn.exit {
+    background: var(--gray-200);
+    color: var(--text-secondary);
+}
+
+.pause-btn.exit:hover {
+    background: var(--danger);
+    color: var(--white);
+}
+
+/* 暂停按钮 */
+.pause-button {
+    position: fixed;
+    top: var(--spacing-lg);
+    right: var(--spacing-lg);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: var(--text-lg);
+    box-shadow: var(--shadow-md);
+    transition: var(--transition);
+    z-index: 100;
+}
+
+.pause-button:hover {
+    background: var(--white);
+    transform: scale(1.05);
+}

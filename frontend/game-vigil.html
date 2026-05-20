@@ -35,6 +35,7 @@
         </section>
 
         <section id="game-area" class="game-area hidden">
+            <button class="pause-button" onclick="togglePause()">⏸️</button>
             <div class="game-stats">
                 <div class="stat-item">
                     <span class="stat-label">剩余时间</span>
@@ -94,8 +95,21 @@
                 </div>
             </div>
         </section>
+
+        <div id="pause-overlay" class="hidden">
+            <div class="pause-content">
+                <div class="pause-icon">⏸️</div>
+                <h2>游戏暂停</h2>
+                <div class="pause-buttons">
+                    <button class="pause-btn resume" onclick="togglePause()">继续游戏</button>
+                    <button class="pause-btn exit" onclick="confirmExit()">退出游戏</button>
+                </div>
+            </div>
+        </div>
     </main>
 
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
     <script src="js/common.js"></script>
     <script src="js/game-vigil.js"></script>
 </body>
